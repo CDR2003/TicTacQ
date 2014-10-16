@@ -8,7 +8,7 @@ namespace TicTacQ
 {
 	public class GameBoard
 	{
-		private Tile[,] _tiles;
+		private bool?[,] _tiles;
 
 		public Grid Size
 		{
@@ -20,17 +20,37 @@ namespace TicTacQ
 
 		public GameBoard( Grid size )
 		{
-			_tiles = new Tile[size.X, size.Y];
+			_tiles = new bool?[size.X, size.Y];
 			for( int i = 0; i < _tiles.GetLength( 0 ); i++ )
 			{
 				for( int j = 0; j < _tiles.GetLength( 1 ); j++ )
 				{
-					_tiles[i, j] = Tile.Empty;
+					_tiles[i, j] = null;
 				}
 			}
 		}
 
-		public Tile this[int x, int y]
+		public GameBoard Revert()
+		{
+			var board = new GameBoard( this.Size );
+			for( int i = 0; i < this.Size.X; i++ )
+			{
+				for( int j = 0; j < this.Size.Y; j++ )
+				{
+					if( this[i, j] == null )
+					{
+						board[i, j] = null;
+					}
+					else
+					{
+						board[i, j] = !this[i, j];
+					}
+				}
+			}
+			return board;
+		}
+
+		public bool? this[int x, int y]
 		{
 			get
 			{
@@ -42,7 +62,7 @@ namespace TicTacQ
 			}
 		}
 
-		public Tile this[Grid grid]
+		public bool? this[Grid grid]
 		{
 			get
 			{
@@ -103,6 +123,19 @@ namespace TicTacQ
 		public override int GetHashCode()
 		{
 			return _tiles.GetHashCode();
+		}
+
+		public GameBoard Clone()
+		{
+			var board = new GameBoard( this.Size );
+			for( int i = 0; i < this.Size.X; i++ )
+			{
+				for( int j = 0; j < this.Size.Y; j++ )
+				{
+					board[i, j] = this[i, j];
+				}
+			}
+			return board;
 		}
 	}
 }
